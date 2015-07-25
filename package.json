@@ -1,0 +1,11 @@
+{
+  "name": "pizi-backbone-localStorage",
+  "homepage": "https://github.com/Manuel-Pi/pizi-backbone-localStorage",
+  "main": "pizi-backbone-localStorage.js",
+  "dependencies": {
+    "backbone": ">=1.1.2",
+    "Manuel-Pi/pizi-localStorage": ">=0.0.1"
+  },
+  "version": "0.0.1",
+  "authors": "Manuel-Pi"
+}
