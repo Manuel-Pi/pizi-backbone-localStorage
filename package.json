@@ -4,7 +4,7 @@
   "main": "pizi-backbone-localStorage.js",
   "dependencies": {
     "backbone": ">=1.1.2",
-    "Manuel-Pi/pizi-localStorage": ">=0.0.1"
+    "pizi-localStorage": "Manuel-Pi/pizi-localStorage"
   },
   "version": "0.0.1",
   "authors": "Manuel-Pi"
