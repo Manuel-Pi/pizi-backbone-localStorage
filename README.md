@@ -18,3 +18,15 @@ Wrapper to deal with the localStorage API for backbone entities
 	} 
 
 Initialize the sepecified persit API overriding Backbone.sync(). A different API can be used for models and session object.
+
+### disable()
+
+### initSession(options)
+
+### saveEntity(model, options)
+
+### deleteEntity(model, options)
+
+### getEntity(model, options)
+
+### getAllEntity(model, options)
