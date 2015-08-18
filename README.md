@@ -27,10 +27,7 @@ Restore the default Backbone.sync() implementation.
 	{
 		success: function(){...}, // Success callback
 		error: function(){...}, // Error callback
-	  	persist: "indexedDB", // Set the persistence API for models and session, localStorage or indexedDB
-	  	models: "localStorage", // Set the persistence API, only for models, if not defined, egal 'persist'
-	  	dbName: "name", // Name of the IDBDatabase, if indexedDB used
-		dbVersion: "1" // Version of the database, if indexedDB used
+	  	persist: 
 	} 
 
 ### saveEntity(model, options)
