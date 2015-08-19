@@ -1,6 +1,6 @@
 # pizi-backbone-localStorage
 
-Wrapper to deal with the localStorage API for backbone entities
+Wrapper to deal with the localStorage API for backbone entities, overriding Backbone.sync() function.
 
 ## functions
 
@@ -28,7 +28,9 @@ Restore the default Backbone.sync() implementation.
 		success: function(){...}, // Success callback
 		error: function(){...}, // Error callback
 	  	persist: 
-	} 
+	}
+	
+Create a Session object (Backbone.Model), accessible from Backbone.session.
 
 ### saveEntity(model, options)
 

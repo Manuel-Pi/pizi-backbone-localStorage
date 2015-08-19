@@ -169,7 +169,7 @@
 			Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));
 		};
 
-		var autoSaveSession = function(changes){
+		var autoSaveSession = function(){
 			Backbone.session.on('change', function(){
 				Backbone.session.set('date', new Date(), {silent: true});
 				Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));

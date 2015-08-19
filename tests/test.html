@@ -1,0 +1,40 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>pizi-backbone-localStorage test</title>
+  <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.18.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
+  <script src="../pizi-backbone-localStorage.js"></script>
+  <script>
+	  	var root = this;
+		QUnit.test( "Root module declaration", function( assert ) {
+			assert.ok( root.piziBackoneLocalStorage, "Module initialized!" );
+		});
+	  
+	  	QUnit.test( "AMD module declaration", function( assert ) {
+		 	var requireLoadingDone = assert.async();
+			$.getScript("//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js", function(){
+				assert.ok(define, "RequireJs is loaded!");
+				var moduleLoadingDone = assert.async();
+				require(['../pizi-localStorage'], function(pls){
+					assert.ok(pls, "Module is defined!");
+					assert.ok(pls.save, "Save funtion available!");
+					assert.ok(pls.get, "Get funtion available!");
+					moduleLoadingDone();
+				});
+				assert.ok(define, "RequireJs is loaded!");
+				requireLoadingDone();
+			});
+	  	});
+	  
+	  	QUnit.test( "CommonJS module declaration", function( assert ) {
+			assert.ok(false, 'no test!');
+		});
+  </script>
+</body>
+</html>
