@@ -1,6 +1,7 @@
 # pizi-backbone-localStorage
 
 Wrapper to deal with the localStorage API for backbone entities, overriding Backbone.sync() function.
+Entities must have a className
 
 ## functions
 
