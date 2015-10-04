@@ -21,7 +21,7 @@
 			assert.ok( global.piziBackboneLocalStorage.apply, "Apply function available!" );
 			assert.ok( global.piziBackboneLocalStorage.disable, "Disable function available!" );
 		});
-
+		/*
 	  	QUnit.test( "AMD module declaration", function( assert ) {
 		 	var requireLoadingDone = assert.async();
 			$.getScript("//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js", function(){
@@ -36,9 +36,9 @@
 				requireLoadingDone();
 			});
 	  	});
-
+		  */
 		QUnit.test( "Override Backbone.sync", function( assert ) {
-			global.piziBackboneLocalStorage.apply();
+			global.piziBackboneLocalStorage.apply({session: true});
 			assert.ok(global.Backbone.defaultSync && global.Backbone.defaultSync !== global.Backbone.sync, "Backbone synch overrrided!");
 			saveGetTest();
 		});
@@ -53,9 +53,25 @@
 					bar: "bar"
 				});
 				var moduleSaveDone = assert.async();
-				model.save({
+				model.save({}, {
 					success: function(model){
 						assert.ok(true, "model saved!");
+						var model2 = new Model({id: model.id});
+						var moduleGetDone = assert.async();
+						model2.fetch({
+							success: function(){
+								assert.ok(model2.get('foo') === "foo" && model2.get('bar') === "bar", "model getted!");
+								var moduleDeleteDone = assert.async();
+								model2.destroy({
+									success: function(){
+										assert.ok(true, "Model deleted!");
+										moduleDeleteDone();
+									}
+								});
+								
+								moduleGetDone();
+							}
+						});
 						moduleSaveDone();
 					}
 				});

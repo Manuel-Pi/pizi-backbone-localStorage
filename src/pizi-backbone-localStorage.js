@@ -5,7 +5,7 @@ var idsExtension = '-map';
 
 var ids = {};
 
-function getAllEntity(model, options){
+function getAllEntity(model, options = {}){
 	var entities = piziLocalStorage.get(model.className ||  model.model && model.model.prototype.className) || {};
 	_.each(entities, function(data){
 		var dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
@@ -16,13 +16,13 @@ function getAllEntity(model, options){
 			}
 		}
 	});
-	if(options && options.success){
+	if(options.success){
 		options.success(entities);
 	}
 	return entities;
 }
 
-function saveEntity(model, options){
+function saveEntity(model, options = {}){
 	if(model instanceof Backbone.Model){
 		var entities = getAllEntity(model);
 
@@ -39,7 +39,9 @@ function saveEntity(model, options){
 		}
 
 		var id = 0;
+		// No id defined
 		if(!model.id){
+			// Check in the stored ids if one is defined for this class
 			if(!ids[model.className]){
 				for(var entity in entities){
 					if(!isNaN(entity.id) && entity.id > id){
@@ -47,85 +49,86 @@ function saveEntity(model, options){
 					}
 				}
 				ids[model.className] = id;
-			} else {
-				id = ids[model.className];
 			}
+			// Increment to have the new key
 			ids[model.className] = ids[model.className]++;
 			entities[ids[model.className]] = data;
 			piziLocalStorage.save(model.className, entities);
+			// Returning the index to let Backbone set it (not sure !)
 			data = {};
 			data[model.idAttribute] = ids[model.className];
-			if(options && options.success){
+			if(options.success){
 				options.success(data);
 			}
 			return data;
 		} else {
 			entities[model.id] = data;
 			piziLocalStorage.save(model.className, entities);
-			if(options && options.success){
+			if(options.success){
 				options.success();
 			}
 		}
-	} else {
-		console.log('Not Backbone Model!');
+	} else if(options.error){
+		options.error(new Error('Not Backbone model!'));
 	}
 }
 
-function getEntity(model, options){
-	if(model.id){
+function getEntity(model, options = {}){
+	if(model.id || model.id === 0){
 		var entities = getAllEntity(model);
-		if(options && options.success){
+		if(options.success){
 			options.success(entities[model.id]);
 		}
 		return entities[model.id];
-	} else {
-		console.log('Id not valid!');
+	} else if(options.error){
+		options.error(new Error('Id not valid! (className: ' + model.className +')'));
 	}
 }
 
-function deleteEntity(model, options){
-	if(model.id){
+function deleteEntity(model, options = {}){
+	if(model.id || model.id === 0){
 		var entities = getAllEntity(model);
 		delete entities[model.id];
-		piziLocalStorage.save(model.className, entities);
-		if(options && options.success){
+		if(entities.length === 0){
+			piziLocalStorage.save(model.className, entities);
+		} else {
+			// Delete class store
+			piziLocalStorage.delete(model.className);
+		}
+		if(options.success){
 			options.success(entities[model.id]);
 		}
-	} else {
-		console.log('Id not valid!');
+	} else if(options.error){
+		options.error(new Error('Id not valid! (className: ' + model.className +')'));
 	}
 }
 
-function overrideBackboneSync(opts){
-
-	opts = opts || {session:true};
+function overrideBackboneSync(opts = {}){
 
 	if(Backbone){
 		Backbone.defaultSync = Backbone.sync;
-		Backbone.sync = function(method, model, options) {
-
-			options = options || (options = {}) ;
+		Backbone.sync = function(method, model, options = {}) {
 
 			var datas;
 
 			switch (method) {
 				case 'create':
-					datas = saveEntity(model);
+					datas = saveEntity(model, options);
 				break;
 
 				case 'update':
-					datas = saveEntity(model);
+					datas = saveEntity(model, options);
 				break;
 
 				case 'delete':
-					deleteEntity(model.id);
+					deleteEntity(model, options);
 				break;
 
 				case 'read':
 					if(model instanceof Backbone.Model){
-						datas = getEntity(model);
+						datas = getEntity(model, options);
 					} else if(model instanceof Backbone.Collection){
-						datas = _.toArray(getAllEntity(model));
+						datas = _.toArray(getAllEntity(model, options));
 					}
 				break;
 			}
@@ -139,6 +142,7 @@ function overrideBackboneSync(opts){
 }
 
 function initSession(opts){
+	opts.session = false;
 	var Session = Backbone.Model.extend({
 		className : 'session',
 		put : function(key, value){

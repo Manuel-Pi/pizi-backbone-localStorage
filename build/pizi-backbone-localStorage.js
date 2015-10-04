@@ -23,7 +23,9 @@
 
 	var ids = {};
 
-	function getAllEntity(model, options) {
+	function getAllEntity(model) {
+		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
 		var entities = _piziLocalStorage2["default"].get(model.className || model.model && model.model.prototype.className) || {};
 		_.each(entities, function (data) {
 			var dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
@@ -34,13 +36,15 @@
 				}
 			}
 		});
-		if (options && options.success) {
+		if (options.success) {
 			options.success(entities);
 		}
 		return entities;
 	}
 
-	function saveEntity(model, options) {
+	function saveEntity(model) {
+		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
 		if (model instanceof _Backbone["default"].Model) {
 			var entities = getAllEntity(model);
 
@@ -57,7 +61,9 @@
 			}
 
 			var id = 0;
+			// No id defined
 			if (!model.id) {
+				// Check in the stored ids if one is defined for this class
 				if (!ids[model.className]) {
 					for (var entity in entities) {
 						if (!isNaN(entity.id) && entity.id > id) {
@@ -65,85 +71,87 @@
 						}
 					}
 					ids[model.className] = id;
-				} else {
-					id = ids[model.className];
 				}
+				// Increment to have the new key
 				ids[model.className] = ids[model.className]++;
 				entities[ids[model.className]] = data;
 				_piziLocalStorage2["default"].save(model.className, entities);
+				// Returning the index to let Backbone set it (not sure !)
 				data = {};
 				data[model.idAttribute] = ids[model.className];
-				if (options && options.success) {
+				if (options.success) {
 					options.success(data);
 				}
 				return data;
 			} else {
 				entities[model.id] = data;
 				_piziLocalStorage2["default"].save(model.className, entities);
-				if (options && options.success) {
+				if (options.success) {
 					options.success();
 				}
 			}
-		} else {
-			console.log('Not Backbone Model!');
+		} else if (options.error) {
+			options.error(new Error('Not Backbone model!'));
 		}
 	}
 
-	function getEntity(model, options) {
-		if (model.id) {
+	function getEntity(model) {
+		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+		if (model.id || model.id === 0) {
 			var entities = getAllEntity(model);
-			if (options && options.success) {
+			if (options.success) {
 				options.success(entities[model.id]);
 			}
 			return entities[model.id];
-		} else {
-			console.log('Id not valid!');
+		} else if (options.error) {
+			options.error(new Error('Id not valid! (className: ' + model.className + ')'));
 		}
 	}
 
-	function deleteEntity(model, options) {
-		if (model.id) {
+	function deleteEntity(model) {
+		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+		if (model.id || model.id === 0) {
 			var entities = getAllEntity(model);
 			delete entities[model.id];
 			_piziLocalStorage2["default"].save(model.className, entities);
-			if (options && options.success) {
+			if (options.success) {
 				options.success(entities[model.id]);
 			}
-		} else {
-			console.log('Id not valid!');
+		} else if (options.error) {
+			options.error(new Error('Id not valid! (className: ' + model.className + ')'));
 		}
 	}
 
-	function overrideBackboneSync(opts) {
-
-		opts = opts || { session: true };
+	function overrideBackboneSync() {
+		var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 		if (_Backbone["default"]) {
 			_Backbone["default"].defaultSync = _Backbone["default"].sync;
-			_Backbone["default"].sync = function (method, model, options) {
-
-				options = options || (options = {});
+			_Backbone["default"].sync = function (method, model) {
+				var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 				var datas;
 
 				switch (method) {
 					case 'create':
-						datas = saveEntity(model);
+						datas = saveEntity(model, options);
 						break;
 
 					case 'update':
-						datas = saveEntity(model);
+						datas = saveEntity(model, options);
 						break;
 
 					case 'delete':
-						deleteEntity(model.id);
+						deleteEntity(model, options);
 						break;
 
 					case 'read':
 						if (model instanceof _Backbone["default"].Model) {
-							datas = getEntity(model);
+							datas = getEntity(model, options);
 						} else if (model instanceof _Backbone["default"].Collection) {
-							datas = _.toArray(getAllEntity(model));
+							datas = _.toArray(getAllEntity(model, options));
 						}
 						break;
 				}
@@ -157,6 +165,7 @@
 	}
 
 	function initSession(opts) {
+		opts.session = false;
 		var Session = _Backbone["default"].Model.extend({
 			className: 'session',
 			put: function put(key, value) {
