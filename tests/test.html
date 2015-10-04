@@ -1,7 +1,11 @@
 <html>
 <head>
   <meta charset="utf-8">
+<<<<<<< HEAD
   <title>pizi-backbone-localStorage global test</title>
+=======
+  <title>pizi-backbone-localStorage test</title>
+>>>>>>> origin/master
   <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.18.0.css">
 </head>
 <body>
@@ -9,6 +13,7 @@
   <div id="qunit-fixture"></div>
   <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
   <script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
+<<<<<<< HEAD
   <script src="underscore.js"></script>
   <script src="jquery.js"></script>
   <script src="backbone.js"></script>
@@ -22,11 +27,21 @@
 			assert.ok( global.piziBackboneLocalStorage.disable, "Disable function available!" );
 		});
 	  	/*
+=======
+  <script src="../pizi-backbone-localStorage.js"></script>
+  <script>
+	  	var root = this;
+		QUnit.test( "Root module declaration", function( assert ) {
+			assert.ok( root.piziBackoneLocalStorage, "Module initialized!" );
+		});
+	  
+>>>>>>> origin/master
 	  	QUnit.test( "AMD module declaration", function( assert ) {
 		 	var requireLoadingDone = assert.async();
 			$.getScript("//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js", function(){
 				assert.ok(define, "RequireJs is loaded!");
 				var moduleLoadingDone = assert.async();
+<<<<<<< HEAD
 				require(['pizi-backbone-localStorage'], function(piziBackboneLocalStorage){
 					assert.ok(piziBackboneLocalStorage, "Module is defined!");
 					assert.ok(piziBackboneLocalStorage.apply, "Apply function available!");
@@ -62,6 +77,22 @@
 			});
 		}
 	  
+=======
+				require(['../pizi-localStorage'], function(pls){
+					assert.ok(pls, "Module is defined!");
+					assert.ok(pls.save, "Save funtion available!");
+					assert.ok(pls.get, "Get funtion available!");
+					moduleLoadingDone();
+				});
+				assert.ok(define, "RequireJs is loaded!");
+				requireLoadingDone();
+			});
+	  	});
+	  
+	  	QUnit.test( "CommonJS module declaration", function( assert ) {
+			assert.ok(false, 'no test!');
+		});
+>>>>>>> origin/master
   </script>
 </body>
 </html>
