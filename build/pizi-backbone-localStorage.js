@@ -115,7 +115,13 @@
 		if (model.id || model.id === 0) {
 			var entities = getAllEntity(model);
 			delete entities[model.id];
-			_piziLocalStorage2["default"].save(model.className, entities);
+			if (entities.length === 0) {
+				_piziLocalStorage2["default"].save(model.className, entities);
+			} else {
+				// Delete class store
+				_piziLocalStorage2["default"]["delete"](model.className);
+				console.log("Store deleted: " + model.className);
+			}
 			if (options.success) {
 				options.success(entities[model.id]);
 			}

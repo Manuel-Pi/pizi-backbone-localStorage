@@ -94,6 +94,7 @@ function deleteEntity(model, options = {}){
 		} else {
 			// Delete class store
 			piziLocalStorage.delete(model.className);
+			console.log("Store deleted: " + model.className);
 		}
 		if(options.success){
 			options.success(entities[model.id]);
