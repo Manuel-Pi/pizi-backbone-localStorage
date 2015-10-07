@@ -7,7 +7,7 @@ var ids = {};
 
 function getAllEntity(model, options = {}){
 	var entities = piziLocalStorage.get(model.className ||  model.model && model.model.prototype.className) || {};
-	_.each(entities, function(data){
+	_.each(entities, (data) => {
 		var dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
 		dates = _.pick(data, ['date'].concat(dates));
 		for(var date in dates){
@@ -108,7 +108,7 @@ function overrideBackboneSync(opts = {}){
 
 	if(Backbone){
 		Backbone.defaultSync = Backbone.sync;
-		Backbone.sync = function(method, model, options = {}) {
+		Backbone.sync = (method, model, options = {}) => {
 
 			var datas;
 
@@ -146,24 +146,24 @@ function initSession(opts){
 	opts.session = false;
 	var Session = Backbone.Model.extend({
 		className : 'session',
-		put : function(key, value){
+		put : (key, value) => {
 			if(value && value.toJSON){
 				value = value.toJSON();
 			}
 			this.set(key, value);
 		},
-		pick : function(key){
+		pick : (key) => {
 			return this.get(key);
 		}
 	});
 
-	var createSesssion = function(){
+	var createSesssion = () => {
 		Backbone.session = new Session({id: 1, date: new Date()});
 		Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));
 	};
 
-	var autoSaveSession = function(changes){
-		Backbone.session.on('change', function(){
+	var autoSaveSession = (changes) => {
+		Backbone.session.on('change', () => {
 			Backbone.session.set('date', new Date(), {silent: true});
 			Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));
 		});
@@ -171,7 +171,7 @@ function initSession(opts){
 
 	var oldSession = new Session({id: 1});
 	oldSession.fetch({
-		success : function(data){
+		success : (data) => {
 			var oldSessionDate = oldSession.get('date');
 			if(oldSessionDate instanceof Date && (new Date()).getTime() - oldSessionDate.getTime() < 3600 * 1000 ){
 				console.log('Old session getted!' + oldSession.get('date'));
@@ -185,7 +185,7 @@ function initSession(opts){
 				opts.success();
 			}
 		},
-		error: function(){
+		error: () => {
 			createSesssion();
 			autoSaveSession();
 			if(opts.error){

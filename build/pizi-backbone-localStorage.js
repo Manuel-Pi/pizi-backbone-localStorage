@@ -171,6 +171,8 @@
 	}
 
 	function initSession(opts) {
+		var _this = this;
+
 		opts.session = false;
 		var Session = _Backbone["default"].Model.extend({
 			className: 'session',
@@ -178,10 +180,10 @@
 				if (value && value.toJSON) {
 					value = value.toJSON();
 				}
-				this.set(key, value);
+				_this.set(key, value);
 			},
 			pick: function pick(key) {
-				return this.get(key);
+				return _this.get(key);
 			}
 		});
 
