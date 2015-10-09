@@ -146,13 +146,13 @@ function initSession(opts){
 	opts.session = false;
 	var Session = Backbone.Model.extend({
 		className : 'session',
-		put : (key, value) => {
+		put(key, value){
 			if(value && value.toJSON){
 				value = value.toJSON();
 			}
 			this.set(key, value);
 		},
-		pick : (key) => {
+		pick(key){
 			return this.get(key);
 		}
 	});
@@ -171,7 +171,7 @@ function initSession(opts){
 
 	var oldSession = new Session({id: 1});
 	oldSession.fetch({
-		success : (data) => {
+		success(data){
 			var oldSessionDate = oldSession.get('date');
 			if(oldSessionDate instanceof Date && (new Date()).getTime() - oldSessionDate.getTime() < 3600 * 1000 ){
 				console.log('Old session getted!' + oldSession.get('date'));
@@ -185,7 +185,7 @@ function initSession(opts){
 				opts.success();
 			}
 		},
-		error: () => {
+		error(){
 			createSesssion();
 			autoSaveSession();
 			if(opts.error){
