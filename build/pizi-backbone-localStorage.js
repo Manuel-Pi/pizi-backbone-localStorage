@@ -48,7 +48,7 @@
 		if (model instanceof _Backbone["default"].Model) {
 			var entities = getAllEntity(model);
 
-			var data = model.toJSON();
+			var data = model.toJSON(options);
 
 			var dates = _.pick(data, ['date'].concat(model.dates));
 			for (var date in dates) {
