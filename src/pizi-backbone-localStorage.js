@@ -104,106 +104,68 @@ function deleteEntity(model, options = {}){
 	}
 }
 
-function overrideBackboneSync(opts = {}){
+function localStorageSync(method, model, options = {}){
+	switch (method) {
+		case 'create':
+			saveEntity(model, options);
+		break;
 
-	if(Backbone){
-		Backbone.defaultSync = Backbone.sync;
-		Backbone.sync = (method, model, options = {}) => {
+		case 'update':
+			saveEntity(model, options);
+		break;
 
-			var datas;
+		case 'delete':
+			deleteEntity(model, options);
+		break;
 
-			switch (method) {
-				case 'create':
-					datas = saveEntity(model, options);
-				break;
-
-				case 'update':
-					datas = saveEntity(model, options);
-				break;
-
-				case 'delete':
-					deleteEntity(model, options);
-				break;
-
-				case 'read':
-					if(model instanceof Backbone.Model){
-						datas = getEntity(model, options);
-					} else if(model instanceof Backbone.Collection){
-						datas = _.toArray(getAllEntity(model, options));
-					}
-				break;
+		case 'read':
+			if(model instanceof Backbone.Model){
+				getEntity(model, options);
+			} else if(model instanceof Backbone.Collection){
+				getAllEntity(model, options);
 			}
-			if(opts.session){
-				initSession(opts);
-			} else if(opts.success){
-				opts.success(datas);
-			}
-		};
+		break;
 	}
 }
 
-function initSession(opts){
-	opts.session = false;
-	var Session = Backbone.Model.extend({
-		className : 'session',
-		put(key, value){
-			if(value && value.toJSON){
-				value = value.toJSON();
-			}
-			this.set(key, value);
-		},
-		pick(key){
-			return this.get(key);
+let LocalStorageModel = Backbone.Model.extend({
+	sync: function(){
+		localStorageSync.apply(this, arguments);
+	}
+});
+
+let LocalStorageCollection = Backbone.Collection.extend({
+	model: LocalStorageModel,
+	sync: function(){
+		localStorageSync.apply(this, arguments);
+	}
+});
+
+let Session = LocalStorageModel.extend({
+	className : 'session',
+	put(key, value, opts = {}){
+		if(value && value.toJSON){
+			value = value.toJSON();
 		}
-	});
+		this.set(key, value);
+		this.set('date', new Date(), {silent: true});
+		this.save({}, _.extend(_.clone(opts), {success: null}));
+	},
+	pick(key){
+		return this.get(key);
+	}
+});
 
-	var createSesssion = () => {
-		Backbone.session = new Session({id: 1, date: new Date()});
-		Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));
-	};
+let session;
 
-	var autoSaveSession = (changes) => {
-		Backbone.session.on('change', () => {
-			Backbone.session.set('date', new Date(), {silent: true});
-			Backbone.session.save({}, _.extend(_.clone(opts), {success: null}));
-		});
-	};
-
-	var oldSession = new Session({id: 1});
-	oldSession.fetch({
-		success(data){
-			var oldSessionDate = oldSession.get('date');
-			if(oldSessionDate instanceof Date && (new Date()).getTime() - oldSessionDate.getTime() < 3600 * 1000 ){
-				console.log('Old session getted!' + oldSession.get('date'));
-				oldSession.set('date', new Date());
-				Backbone.session = oldSession;
-			} else {
-				createSesssion();
-			}
-			autoSaveSession();
-			if(opts.success){
-				opts.success();
-			}
-		},
-		error(){
-			createSesssion();
-			autoSaveSession();
-			if(opts.error){
-				opts.error();
-			}
-		},
-		persist: opts.persist
-	});
-}
-
-function restoreDefaultSync(){
-	Backbone.sync = Backbone.defaultSync;
+function getSession(){
+	return session || (new Session({id: 1})).fetch();
 }
 
 export default {
-	apply : overrideBackboneSync,
-	disable : restoreDefaultSync,
-	initSession : initSession,
+	Model : LocalStorageModel,
+	Collection : LocalStorageCollection,
+	getSession : getSession,
 	saveEntity : saveEntity,
 	deleteEntity : deleteEntity,
 	getEntity : getEntity,
