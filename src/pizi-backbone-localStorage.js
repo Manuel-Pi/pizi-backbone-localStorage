@@ -157,9 +157,10 @@ let Session = LocalStorageModel.extend({
 });
 
 let session;
-
 function getSession(){
-	return session || (new Session({id: 1})).fetch();
+	session = session || new Session({id: 1});
+	session.fetch();
+	return session;
 }
 
 export default {
