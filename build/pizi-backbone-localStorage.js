@@ -171,7 +171,7 @@
 
 	var Session = LocalStorageModel.extend({
 		className: 'session',
-		"default": {
+		defaults: {
 			id: 1,
 			date: new Date()
 		},

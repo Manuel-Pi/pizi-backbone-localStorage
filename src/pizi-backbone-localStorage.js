@@ -143,7 +143,7 @@ let LocalStorageCollection = Backbone.Collection.extend({
 
 let Session = LocalStorageModel.extend({
 	className : 'session',
-	default: {
+	defaults: {
 		id: 1,
 		date: new Date()
 	},
