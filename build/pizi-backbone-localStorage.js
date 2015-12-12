@@ -1,8 +1,8 @@
 (function (global, factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["exports", "module", "backbone", "piziLocalStorage"], factory);
+		define(["exports", "module", "backbone", "pizi-localStorage"], factory);
 	} else if (typeof exports !== "undefined" && typeof module !== "undefined") {
-		factory(exports, module, require("backbone"), require("piziLocalStorage"));
+		factory(exports, module, require("backbone"), require("pizi-localStorage"));
 	} else {
 		var mod = {
 			exports: {}
