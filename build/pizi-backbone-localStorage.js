@@ -186,10 +186,16 @@
 		}
 	});
 
+	var session = undefined;
+
+	function getSession() {
+		return session || new Session({ id: 1 }).fetch();
+	}
+
 	module.exports = {
 		Model: LocalStorageModel,
 		Collection: LocalStorageCollection,
-		getSession: new Session({ id: 1 }).fetch(),
+		getSession: getSession,
 		saveEntity: saveEntity,
 		deleteEntity: deleteEntity,
 		getEntity: getEntity,
