@@ -143,6 +143,10 @@ let LocalStorageCollection = Backbone.Collection.extend({
 
 let Session = LocalStorageModel.extend({
 	className : 'session',
+	default: {
+		id: 1,
+		date: new Date()
+	},
 	put(key, value, opts = {}){
 		if(value && value.toJSON){
 			value = value.toJSON();
@@ -150,16 +154,13 @@ let Session = LocalStorageModel.extend({
 		this.set(key, value);
 		this.set('date', new Date(), {silent: true});
 		this.save({}, _.extend(_.clone(opts), {success: null}));
-	},
-	pick(key){
-		return this.get(key);
 	}
 });
 
 let session;
-function getSession(){
-	session = session || new Session({id: 1});
-	session.fetch();
+function getSession(opts = {}){
+	session = session || new Session(opts);
+	session.fetch(opts);
 	return session;
 }
 

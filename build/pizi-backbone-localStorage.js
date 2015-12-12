@@ -171,6 +171,10 @@
 
 	var Session = LocalStorageModel.extend({
 		className: 'session',
+		"default": {
+			id: 1,
+			date: new Date()
+		},
 		put: function put(key, value) {
 			var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -180,16 +184,15 @@
 			this.set(key, value);
 			this.set('date', new Date(), { silent: true });
 			this.save({}, _.extend(_.clone(opts), { success: null }));
-		},
-		pick: function pick(key) {
-			return this.get(key);
 		}
 	});
 
 	var session = undefined;
 	function getSession() {
-		session = session || new Session({ id: 1 });
-		session.fetch();
+		var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+		session = session || new Session(opts);
+		session.fetch(opts);
 		return session;
 	}
 
