@@ -1,5 +1,5 @@
 import Backbone from "backbone";
-import piziLocalStorage from "pizi-localStorage";
+import piziLocalStorage from "piziLocalStorage";
 
 var idsExtension = '-map';
 
