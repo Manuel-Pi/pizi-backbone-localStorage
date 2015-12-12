@@ -191,7 +191,7 @@
 	function getSession() {
 		var opts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-		session = session || new Session(opts);
+		session = session || new Session();
 		session.fetch(opts);
 		return session;
 	}
