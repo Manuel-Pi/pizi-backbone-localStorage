@@ -187,9 +187,10 @@
 	});
 
 	var session = undefined;
-
 	function getSession() {
-		return session || new Session({ id: 1 }).fetch();
+		session = session || new Session({ id: 1 });
+		session.fetch();
+		return session;
 	}
 
 	module.exports = {
