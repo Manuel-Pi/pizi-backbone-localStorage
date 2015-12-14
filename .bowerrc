@@ -1,4 +1,6 @@
 {
   "directory": "src/lib",
-  "timeout": 120000
+  "timeout": 120000,
+  "proxy":"http://air3plfms19.sesame.infotel.com:8080",
+  "https-proxy":"http://air3plfms19.sesame.infotel.com:8080"
 }

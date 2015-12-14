@@ -1,16 +1,16 @@
 import Backbone from "backbone";
 import piziLocalStorage from "pizi-localStorage";
 
-var idsExtension = '-map';
+let idsExtension = '-map';
 
-var ids = {};
+let ids = {};
 
 function getAllEntity(model, options = {}){
-	var entities = piziLocalStorage.get(model.className ||  model.model && model.model.prototype.className) || {};
+	let entities = piziLocalStorage.get(model.className ||  model.model && model.model.prototype.className) || {};
 	_.each(entities, (data) => {
-		var dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
+		let dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
 		dates = _.pick(data, ['date'].concat(dates));
-		for(var date in dates){
+		for(let date in dates){
 			if(dates.hasOwnProperty(date) && dates[date]){
 				data[date] = new Date(dates[date]);
 			}
@@ -24,12 +24,12 @@ function getAllEntity(model, options = {}){
 
 function saveEntity(model, options = {}){
 	if(model instanceof Backbone.Model){
-		var entities = getAllEntity(model);
+		let entities = getAllEntity(model);
 
-		var data = model.toJSON(options);
+		let data = model.toJSON(options);
 
-		var dates = _.pick(data, ['date'].concat(model.dates));
-		for(var date in dates){
+		let dates = _.pick(data, ['date'].concat(model.dates));
+		for(let date in dates){
 			if(dates.hasOwnProperty(date)){
 				if(dates[date] instanceof Date){
 					// Deal Dates
@@ -38,12 +38,12 @@ function saveEntity(model, options = {}){
 			}
 		}
 
-		var id = 0;
+		let id = 0;
 		// No id defined
 		if(!model.id){
 			// Check in the stored ids if one is defined for this class
 			if(!ids[model.className]){
-				for(var entity in entities){
+				for(let entity in entities){
 					if(!isNaN(entity.id) && entity.id > id){
 						id = entity.id;
 					}
@@ -75,7 +75,7 @@ function saveEntity(model, options = {}){
 
 function getEntity(model, options = {}){
 	if(model.id || model.id === 0){
-		var entities = getAllEntity(model);
+		let entities = getAllEntity(model);
 		if(options.success){
 			options.success(entities[model.id]);
 		}
@@ -87,7 +87,7 @@ function getEntity(model, options = {}){
 
 function deleteEntity(model, options = {}){
 	if(model.id || model.id === 0){
-		var entities = getAllEntity(model);
+		let entities = getAllEntity(model);
 		delete entities[model.id];
 		if(entities.length === 0){
 			piziLocalStorage.save(model.className, entities);
@@ -167,9 +167,5 @@ function getSession(opts = {}){
 export default {
 	Model : LocalStorageModel,
 	Collection : LocalStorageCollection,
-	getSession : getSession,
-	saveEntity : saveEntity,
-	deleteEntity : deleteEntity,
-	getEntity : getEntity,
-	getAllEntity : getAllEntity
+	getSession : getSession
 };
