@@ -3,41 +3,31 @@ module.exports = function(grunt) {
 		srcFile: 'src/',
 		build: 'build/',
 		testFile: 'tests/',
-		serverFolder: 'C:/Developppment/Web/Servers/pizi-express-server/Apps/pizi-backbone-localStorage/',
+		//serverFolder: 'C:/Developppment/Web/Servers/pizi-express-server/Apps/pizi-backbone-localStorage/',
+		serverFolder: 'C:/Users/e_na/Documents/GitHub/pizi-express-server/Apps/pizi-backbone-localStorage/',
 		jshint: {
 			all: {
 				options: {
 					devel: true,
 					esnext: true
 				},
-				src: '<%= srcFile %>'
+				src: ['src/pizi-backbone-localStorage.js']
 			}
 		},
 		copy: {
 			deployDev : {
-					files : [
-						{
-							expand: true,
-							cwd: '<%= srcFile %>',
-							src: ['**'],
-							dest: '<%= serverFolder %>'
-						},
-						{
-							expand: true,
-							cwd: '<%= testFile %>',
-							src: ['**'],
-							dest: '<%= serverFolder %>'
-						}
-					]
-			},
-			deployDevBabel : {
 				files : [
 					{
 						expand: true,
-						cwd: '<%= build %>',
-						src: ['**'],
+						cwd: '<%= srcFile %>',
+						src: ["**/*.js",
+							"!lib/**/*"],
 						dest: '<%= serverFolder %>'
-					},
+					}
+				]
+			},
+			deployTest: {
+				files : [
 					{
 						expand: true,
 						cwd: '<%= testFile %>',
@@ -57,13 +47,23 @@ module.exports = function(grunt) {
 						flatten: true
 					}
 				]
+			},
+			deployBuild : {
+				files : [
+					{
+						expand: true,
+						cwd: '<%= build %>',
+						src: ['**'],
+						dest: '<%= serverFolder %>'
+					}
+				]
 			}
 		},
 		clean: {
 			options :{
 				force : true
 			},
-			deployDev: '<%= serverFolder %>',
+			deploy: '<%= serverFolder %>',
 			build: '<%= build %>'
 		},
 		babel: {
@@ -76,7 +76,8 @@ module.exports = function(grunt) {
 				files: [{
 					"expand": true,
 					"cwd": '<%= srcFile %>',
-					"src": ["**/*.js"],
+					"src": ["**/*.js",
+							"!lib/**/*"],
 					"dest": '<%= build %>',
 					"ext": ".js"
 				}]
@@ -89,6 +90,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-babel');
 	
 	grunt.registerTask('build', ['jshint', 'clean:build', 'babel']);
-	grunt.registerTask('deployDev', ['jshint', 'clean:deployDev', 'copy:deployDev']);
-	grunt.registerTask('deployBuild', ['build', 'clean:deployDev', 'copy:deployDevBabel']);
+	grunt.registerTask('deployDev', ['jshint', 'clean:deploy', 'copy:deployDev', 'copy:deployTest']);
+	grunt.registerTask('deployBuild', ['build', 'clean:deploy', 'copy:deployBuild', 'copy:deployTest']);
 };

@@ -121,9 +121,5 @@ function getSession(opts = {}){
 export default {
 	Model : LocalStorageModel,
 	Collection : LocalStorageCollection,
-	getSession : getSession,
-	saveEntity : saveEntity,
-	deleteEntity : deleteEntity,
-	getEntity : getEntity,
-	getAllEntity : getAllEntity
+	getSession : getSession
 };
