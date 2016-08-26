@@ -111,7 +111,7 @@ let Session = LocalStorageModel.extend({
 	}
 });
 
-const session;
+let session;
 function getSession(opts = {}){
 	session = session || new Session();
 	session.fetch(opts);

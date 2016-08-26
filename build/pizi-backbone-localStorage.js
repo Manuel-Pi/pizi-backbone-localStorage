@@ -20,7 +20,6 @@
 	var _piziLocalStorage2 = _interopRequireDefault(_piziLocalStorage);
 
 	var idsExtension = '-map';
-
 	var ids = {};
 
 	function getAllEntity(model) {
@@ -30,46 +29,26 @@
 		_.each(entities, function (data) {
 			var dates = model.model && model.model.prototype.dates ? model.model.prototype.dates : model.dates;
 			dates = _.pick(data, ['date'].concat(dates));
-			for (var date in dates) {
-				if (dates.hasOwnProperty(date) && dates[date]) {
-					data[date] = new Date(dates[date]);
-				}
-			}
+			for (var date in dates) if (dates.hasOwnProperty(date) && dates[date]) data[date] = new Date(dates[date]);
 		});
-		if (options.success) {
-			options.success(entities);
-		}
+		if (options.success) options.success(entities);
 		return entities;
 	}
-
 	function saveEntity(model) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 		if (model instanceof _Backbone["default"].Model) {
 			var entities = getAllEntity(model);
-
 			var data = model.toJSON(options);
-
 			var dates = _.pick(data, ['date'].concat(model.dates));
 			for (var date in dates) {
-				if (dates.hasOwnProperty(date)) {
-					if (dates[date] instanceof Date) {
-						// Deal Dates
-						data[date] = dates[date].getTime();
-					}
-				}
-			}
-
-			var id = 0;
-			// No id defined
+				if (dates.hasOwnProperty(date) && dates[date] instanceof Date) data[date] = dates[date].getTime();
+			} // No id defined
 			if (!model.id) {
 				// Check in the stored ids if one is defined for this class
 				if (!ids[model.className]) {
-					for (var entity in entities) {
-						if (!isNaN(entity.id) && entity.id > id) {
-							id = entity.id;
-						}
-					}
+					var id = 0;
+					for (var entity in entities) if (!isNaN(entity.id) && entity.id > id) id = entity.id;
 					ids[model.className] = id;
 				}
 				// Increment to have the new key
@@ -79,36 +58,28 @@
 				// Returning the index to let Backbone set it (not sure !)
 				data = {};
 				data[model.idAttribute] = ids[model.className];
-				if (options.success) {
-					options.success(data);
-				}
+				if (options.success) options.success(data);
 				return data;
 			} else {
 				entities[model.id] = data;
 				_piziLocalStorage2["default"].save(model.className, entities);
-				if (options.success) {
-					options.success();
-				}
+				if (options.success) options.success();
 			}
 		} else if (options.error) {
 			options.error(new Error('Not Backbone model!'));
 		}
 	}
-
 	function getEntity(model) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 		if (model.id || model.id === 0) {
 			var entities = getAllEntity(model);
-			if (options.success) {
-				options.success(entities[model.id]);
-			}
+			if (options.success) options.success(entities[model.id]);
 			return entities[model.id];
 		} else if (options.error) {
 			options.error(new Error('Id not valid! (className: ' + model.className + ')'));
 		}
 	}
-
 	function deleteEntity(model) {
 		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
@@ -122,14 +93,11 @@
 				_piziLocalStorage2["default"]["delete"](model.className);
 				console.log("Store deleted: " + model.className);
 			}
-			if (options.success) {
-				options.success(entities[model.id]);
-			}
+			if (options.success) options.success(entities[model.id]);
 		} else if (options.error) {
 			options.error(new Error('Id not valid! (className: ' + model.className + ')'));
 		}
 	}
-
 	function localStorageSync(method, model) {
 		var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
@@ -155,20 +123,13 @@
 				break;
 		}
 	}
-
-	var LocalStorageModel = _Backbone["default"].Model.extend({
-		sync: function sync() {
+	// Define LocalStorageModel, LocalStorageCollection, and Session
+	var LocalStorageModel = _Backbone["default"].Model.extend({ sync: function sync() {
 			localStorageSync.apply(this, arguments);
-		}
-	});
-
-	var LocalStorageCollection = _Backbone["default"].Collection.extend({
-		model: LocalStorageModel,
-		sync: function sync() {
+		} });
+	var LocalStorageCollection = _Backbone["default"].Collection.extend({ model: LocalStorageModel, sync: function sync() {
 			localStorageSync.apply(this, arguments);
-		}
-	});
-
+		} });
 	var Session = LocalStorageModel.extend({
 		className: 'session',
 		defaults: {
@@ -178,9 +139,7 @@
 		put: function put(key, value) {
 			var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-			if (value && value.toJSON) {
-				value = value.toJSON();
-			}
+			if (value && value.toJSON) value = value.toJSON();
 			this.set(key, value);
 			this.set('date', new Date(), { silent: true });
 			this.save({}, _.extend(_.clone(opts), { success: null }));
