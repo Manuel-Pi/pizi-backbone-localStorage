@@ -1,72 +1,126 @@
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>pizi-backbone-localStorage test</title>
-  <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.18.0.css">
-</head>
-<body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
-  <script src="underscore.js"></script>
-  <script src="jquery.js"></script>
-  <script src="backbone.js"></script>
-  <script src="pizi-localStorage.js"></script>
-  <script src="pizi-backbone-localStorage.js"></script>
-  <script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
-  <script>
-	  	var global = this;
-		QUnit.test( "Root module declaration", function( assert ) {
-			assert.ok( global.piziBackboneLocalStorage, "Module initialized!" );
-		});
-		/*
-	  	QUnit.test( "AMD module declaration", function( assert ) {
-		 	var requireLoadingDone = assert.async();
-			$.getScript("//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js", function(){
-				assert.ok(define, "RequireJs is loaded!");
-				var moduleLoadingDone = assert.async();
-				require(['pizi-backbone-localStorage'], function(piziBackboneLocalStorage){
-					assert.ok(piziBackboneLocalStorage, "Module is defined!");
-					assert.ok(piziBackboneLocalStorage.apply, "Apply function available!");
-					assert.ok(piziBackboneLocalStorage.disable, "Disable function available!");
-					moduleLoadingDone();
-				});
-				requireLoadingDone();
-			});
-	  	});
-		  */
 
-		QUnit.test( "Save and get Backbone model", function( assert ) {
-			var Model = global.piziBackboneLocalStorage.Model.extend({
-				className: "test"
-			});
-			var model = new Model({
-				foo: "foo",
-				bar: "bar"
-			});
-			var moduleSaveDone = assert.async();
-			model.save({}, {
-				success: function(model){
-					assert.ok(true, "model saved!");
-					var model2 = new Model({id: model.id});
-					var moduleGetDone = assert.async();
-					model2.fetch({
-						success: function(){
-							assert.ok(model2.get('foo') === "foo" && model2.get('bar') === "bar", "model getted!");
-							var moduleDeleteDone = assert.async();
-							model2.destroy({
-								success: function(){
-									assert.ok(true, "Model deleted!");
-									moduleDeleteDone();
-								}
-							});
-							
-							moduleGetDone();
-						}
-					});
-					moduleSaveDone();
-				}
-			});
-		});
-  </script>
+<head>
+    <meta charset="utf-8">
+    <title>pizi-backbone-localStorage test</title>
+    <link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.18.0.css">
+</head>
+
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="pizi-backbone-localStorage.js"></script>
+    <script src="//code.jquery.com/qunit/qunit-1.18.0.js"></script>
+    <script>
+        var global = this;
+        QUnit.test("Root module declaration", function(assert) {
+            assert.ok(global.piziBackboneLocalStorage, "Module initialized!");
+        });
+
+        QUnit.test("Save and get Backbone model with ", function(assert) {
+            var model = new Backbone.Model({
+                foo: "foo",
+                bar: "bar"
+            });
+            var moduleSaveDone = assert.async();
+            model.save({}, {
+                storage: 'local',
+                success: function(model) {
+                    assert.ok(true, "model saved!");
+                    var model2 = new Backbone.Model({
+                        id: model.id
+                    });
+                    var moduleGetDone = assert.async();
+                    model2.fetch({
+                        storage: 'local',
+                        success: function() {
+                            assert.ok(model2.get('foo') === "foo" && model2.get('bar') === "bar", "model getted!");
+                            var moduleDeleteDone = assert.async();
+                            model2.destroy({
+                                storage: 'local',
+                                success: function() {
+                                    assert.ok(true, "Model deleted!");
+                                    moduleDeleteDone();
+                                }
+                            });
+                            moduleGetDone();
+                        }
+                    });
+                    moduleSaveDone();
+                }
+            });
+        });
+        QUnit.test("Save and get herited Backbone model", function(assert) {
+            var Model = Backbone.Model.extend({
+                className: "TestModel",
+                storage: 'local'
+            });
+            var model = new Model({
+                foo: "foo",
+                bar: "bar"
+            });
+            var moduleSaveDone = assert.async();
+            model.save({}, {
+                success: function(model) {
+                    assert.ok(true, "model saved!");
+                    var model2 = new Model({
+                        id: model.id
+                    });
+                    var moduleGetDone = assert.async();
+                    model2.fetch({
+                        success: function() {
+                            assert.ok(model2.get('foo') === "foo" && model2.get('bar') === "bar", "model getted!");
+                            var moduleDeleteDone = assert.async();
+                            model2.destroy({
+                                success: function() {
+                                    assert.ok(true, "Model deleted!");
+                                    moduleDeleteDone();
+                                }
+                            });
+
+                            moduleGetDone();
+                        }
+                    });
+                    moduleSaveDone();
+                }
+            });
+        });
+        QUnit.test("Save and get herited Backbone model to session", function(assert) {
+            var Model = Backbone.Model.extend({
+                className: "TestModel",
+                storage: 'session'
+            });
+            var model = new Model({
+                foo: "foo",
+                bar: "bar"
+            });
+            var moduleSaveDone = assert.async();
+            model.save({}, {
+                success: function(model) {
+                    assert.ok(true, "model saved!");
+                    var model2 = new Model({
+                        id: model.id
+                    });
+                    var moduleGetDone = assert.async();
+                    model2.fetch({
+                        success: function() {
+                            assert.ok(model2.get('foo') === "foo" && model2.get('bar') === "bar", "model getted!");
+                            var moduleDeleteDone = assert.async();
+                            model2.destroy({
+                                success: function() {
+                                    assert.ok(true, "Model deleted!");
+                                    moduleDeleteDone();
+                                }
+                            });
+
+                            moduleGetDone();
+                        }
+                    });
+                    moduleSaveDone();
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

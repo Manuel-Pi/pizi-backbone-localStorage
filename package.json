@@ -2,6 +2,10 @@
   "name": "pizi-backbone-localStorage",
   "homepage": "https://github.com/Manuel-Pi/pizi-backbone-localStorage",
   "main": "build/pizi-backbone-localStorage.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "npm run build && webpack --config webpack.config.test.js"
+  },
   "dependencies": {
     "backbone": ">=1.3.3",
     "pizi-localStorage": "Manuel-Pi/pizi-localStorage"
@@ -9,14 +13,16 @@
   "version": "0.0.2",
   "authors": "Manuel-Pi",
   "devDependencies": {
-    "grunt": "",
-    "babel-cli": "^6.11.4",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-es2015-modules-amd": "^6.8.0",
-    "grunt-babel": "",
-    "grunt-contrib-clean": "",
-    "grunt-contrib-copy": "",
-    "grunt-contrib-jshint": "",
-    "jquery": "^2.1.4"
+    "babel-preset-es2015": "^6.3.13",
+    "cpx": "^1.5.0",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "html-loader": "^0.5.0",
+    "jquery": "^3.1.0",
+    "underscore": "^1.8.3",
+    "webpack": "^2.2.0-rc.3",
+    "webpack-node-externals": "^1.6.0"
   }
 }
